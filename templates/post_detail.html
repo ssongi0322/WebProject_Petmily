@@ -1,0 +1,199 @@
+{% extends 'base.html' %} {% load board_filter %} {% block style %}
+<style>
+  .bi-chat-square-heart {
+    font-size: 30px;
+    color: crimson;
+  }
+
+  {% comment %} .answer li {
+    list-style: none;
+  } {% endcomment %}
+
+  .comment_create, .order {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+{% endblock style %} {% block contents %}
+<div class="pt-3">
+  <form class="col-lg-8 col-md-10 mx-auto">
+    {% include 'form_errors.html' %}
+    <div class="row mt-5 pt-3">
+      <div class="row mt-3 mb-1">
+        <div class="col-4">
+          <h5 class="pb-2">
+            <b>제목 : {{post.title}}</b>
+          </h5>
+        </div>
+      </div>
+      <hr class="one mb-3" />
+      <div class="d-flex flex-row justify-content-between mb-5">
+        <div class="py-2 text-muted">
+          <!-- 작성날짜 -->
+          <span>작성자 : {{post.writer}}</span>
+          <span>({{post.created_at|date:'Y-m-d H:i'}})</span>
+        </div>
+        {% if post.modified_at %}
+        <div class="pt-1">
+          <div class="py-2 text-muted">
+            <!-- 수정날짜 -->
+            <div class="text-start">
+              (수정 : {{post.modified_at|date:'Y-m-d H:i'}})
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-12 mt-5 mb-5">
+        {% if post.image %} {% for i in post.image.all %}
+        <img
+          src="{{i.image.url}}"
+          alt=""
+          class="mx-auto d-block"
+          style="width: 600px"
+        /><br />
+        {% endfor %} {% endif %} {% comment %} {% if post.image %}
+        <img src="{{post.image.url}}" alt="" class="mx-auto d-block" />
+        {% endif %} {% endcomment %}
+      </div>
+      <div class="col-12 mb-5">
+        <p>{{post.content}}</p>
+      </div>
+      <a href="#" data-uri="{% url 'vote_post' post.id %}" class="recommend btn mx-auto d-block"><i class="bi bi-chat-square-heart"></i></a>
+      <hr class="one mt-5 mb-5" />
+
+    </div>
+    <div class="d-flex mb-5">
+      <div class='me-auto'>
+        {% if post.get_previous %}
+        <div> 
+          <a href="{{post.get_previous.get_absolute_url}}" class='order'>이전글 : {{post.get_previous}}</a>
+        </div>
+        {% endif %}
+        {% if post.get_next %}
+        <div> 
+          <a href="{{post.get_next.get_absolute_url}}" class='order'>다음글 : {{post.get_next}}</a>
+        </div>
+        {% endif %}
+      </div>
+      <div>
+        {% if post.writer == request.user %}
+        <a href="#" class="btn btn-sm btn-outline-secondary delete" data-uri="{% url 'post_delete' post.id %}">삭제</a>
+        <a href="{% url 'post_edit' post.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
+        {% endif %}
+        <a href="#" class="btn btn-sm btn-outline-secondary list" style="background-color:#675444; color:#fff" data-uri="{% url 'post_list' %}">목록으로</a>
+      </div>
+    </div>
+  </form>
+    <!-- 댓글 영역 -->
+    <section class="pb-3 col-lg-8 col-md-10 mx-auto mb-5">
+      <div class="card bg-light">
+        <div class="card-body">
+          <!-- 댓글 작성 폼 -->
+          <h5 class="my-3 py-2">
+            <!-- 댓글 개수 -->
+            {{post.answer_set.count}} 개의 댓글이 있습니다.
+          </h5>
+          {% include 'form_errors.html' %}
+          <div class="row mb-5">
+            <form action="{% url 'answer_write' post.id %}" method="post">
+              {% csrf_token %}
+              <div class="form-group mb-3">
+                <textarea name="content" id="content" rows="3" class="form-control"></textarea>
+              </div>
+              <button type="submit" class="btn btn-sm btn-outline-secondary" style="float: right">
+                댓글 쓰기
+              </button>
+            </form>
+          </div>
+          {% comment %}
+          <hr class="one mb-3" />
+          {% endcomment %} {% for answer in post.answer_set.all %}
+          <a name="answer_{{answer.id}}"></a>
+          <div class="row">
+            <div class="col-12 mb-3">
+              <div class="border-top pt-3">
+                <div>
+                  <!-- 댓글 내용 -->
+                  {{answer.content|mark}}
+                </div>
+                {% comment %} <div class="d-flex justify-content-end">
+                  <div class="badge bg-secondary p-2">
+                    <!-- 댓글 작성날짜 -->
+                    작성 날짜 : {{answer.created_at|date:'Y-m-d H:i'}}
+                  </div>
+                </div>
+                {% if answer.modified_at %}
+                <div class="d-flex justify-content-end pt-1">
+                  <div class="badge bg-secondary p-2">
+                    <!-- 댓글 수정날짜 -->
+                    <div class="text-start">
+                      수정 : {{answer.modified_at|date:'Y-m-d H:i'}}
+                    </div>
+                  </div>
+                </div>
+                {% endif %} {% endcomment %}
+                <div class='text-muted'>{{answer.writer}} {{answer.created_at|date:'Y-m-d H:i'}} (수정 : {{answer.modified_at|date:'Y-m-d H:i'}})</div>
+                <div class="my-3">
+                  {% if answer.writer == request.user %}
+                  <a href="{% url 'answer_edit' answer.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
+                  <a href="#" class="btn btn-sm btn-outline-secondary delete" data-uri="{% url 'answer_delete' answer.id %}">삭제</a>
+                  {% endif %}
+                  <a href="{% url 'comment_write' answer.id %}" class="btn btn-sm btn-outline-secondary">대댓글</a>
+                  <a href="{% url 'vote_answer' answer.id %}" class="recommend btn btn-outline-secondary btn-sm ms-3">추천 : {{answer.vote.count}}</a>
+                </div>
+                <!-- 대댓글 -->
+                {% if answer.comment_set.count > 0 %}
+                <div class="mt-3 ms-5">
+                  {% for comment in answer.comment_set.all %}
+                  <!-- 앵커 부분 -->
+                  <a name="comment_{{comment.id}}"></a>
+                  <div class="comment py-2 text-muted">
+                    <i class="bi bi-arrow-return-right"></i>
+                    <span style="white-space: pre-line">{{comment.content}}</span>
+                    <span>- {{comment.writer}} {{comment.created_at|date:'Y-m-d H:i'}} (수정 : {{comment.modified_at|date:'Y-m-d H:i'}})</span>
+                    <!-- 대댓글 작성자와 로그인 사용자가 같다면 -->
+                    {% if comment.writer == request.user %}
+                    <a href="{% url 'comment_edit' comment.id %}" class="btn btn-sm btn-outline-secondary ms-3">수정</a>
+                    <a href="#" data-uri="{% url 'comment_delete' comment.id %}" class="btn btn-sm btn-outline-secondary delete">삭제</a>
+                    {% endif %}
+                    <a href="{% url 'vote_comment' comment.id %}" class="recommend btn btn-outline-secondary btn-sm ms-3">추천 : {{comment.vote.count}}</a>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  
+  <!-- 댓글 영역 종료 -->
+</div>
+{% endblock contents %} {% block script %}
+<script>
+  // 목록
+  document
+    .querySelector(".list")
+    .addEventListener("click", () => (location.href = "{% url 'post_list' %}"));
+
+  // 삭제
+  let elements = document.querySelectorAll(".btn-danger, .delete");
+  elements.forEach((ele, idx) => {
+    ele.addEventListener("click", (e) => {
+      if (confirm("정말로 삭제하시겠습니까?")) {
+        location.href = e.target.dataset.uri;
+      }
+    });
+  });
+
+  // 추천 버튼 클릭 시 '정말로 추천하시겠습니까?'
+  $(".recommend").on("click", function (e) {
+    if (confirm("정말로 추천하시겠습니까?")) {
+      location.href = $(this).data("uri");
+    }
+  });
+</script>
+{% endblock script %}

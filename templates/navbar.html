@@ -1,0 +1,104 @@
+{% load static %}
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<nav class="navbar sticky-top" style="background-color: #fabe50">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/" style="color: #fff"><img src="{% static 'img/logo.png' %}" alt="" style="object-fit: cover; width: 80px"/>
+      <strong style="font-size: 25px">Petmily</strong>
+    </a>
+    <div class="justify-content-end">
+      <label class="switch theme-switch">
+        <input type="checkbox" class="bsc"/>
+        <span class="slider"></span>
+      </label>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" style="background-color: #fff">
+        <span class="navbar-toggler-icon" style="background-color: #fff"></span>
+      </button>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-header" style="background-color: #fabe50">
+        <a class="navbar-brand" href="/">
+          <h2 class="offcanvas-title" id="offcanvasNavbarLabel" style="color: #fff">
+            <strong>Petmily</strong>
+          </h2>
+        </a>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body" style="background-color: #fabe50">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'board_index' %}" style="color: #fff">
+              <h3>
+                <strong>Missing</strong>
+              </h3>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'find_index' %}" style="color: #fff">
+              <h3>
+                <strong>Care</strong>
+              </h3>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'todo_list' %}" disabled="disabled" style="color: #fff">
+              <h3>
+                <strong>My Calendar</strong>
+              </h3>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'maps' %}" style="color: #fff">
+              <h3>
+                <strong>Map</strong>
+              </h3>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'post_list' %}" style="color: #fff">
+              <h3>
+                <strong>Community</strong>
+              </h3>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'vol_index' %}" style="color: #fff">
+              <h3>
+                <strong>Volunteer</strong>
+              </h3>
+            </a>
+          </li>
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{user.name}}
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="nav-link" href="{% url 'profile' %}">프로필 보기</a>
+                </li>
+                <li>
+                  <a class="nav-link user-logout" href="{% url 'logout' %}">Logout</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="{% url 'password_change' %}">비밀번호 변경</a>
+                </li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}" style="color: #000">
+                <h5>Login</h5>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'signup' %} " style="color: #000">
+                <h5>Signup</h5>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+{% block script %}{% endblock script %}

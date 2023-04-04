@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kor">
+
+  <head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Petmily</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="shortcut icon" href="https://slack-imgs.com/?c=1&o1=ro&url=https%3A%2F%2Fcdn.pixabay.com%2Fphoto%2F2017%2F03%2F25%2F14%2F26%2Fanimals-2173635_960_720.jpg">
+    {% block style %}{% endblock style %}
+  </head>
+
+  <body>
+    {% include 'navbar.html' %}
+    {% block contents %}{% endblock contents %}
+    <footer></footer>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script>
+      const tags = document.getElementsByTagName("body");
+      for (const tag of tags) {
+        if (localStorage.theme) {
+          tag.setAttribute("data-bs-theme", localStorage.theme);
+        }
+
+        if (tag.getAttribute("data-bs-theme") == "dark") {
+          document
+            .querySelector(".bsc")
+            .setAttribute("checked", "")
+        }
+        document
+          .querySelector(".bsc")
+          .addEventListener("change", () => {
+            if (document.querySelector(".bsc").checked == true) {
+              tag.setAttribute("data-bs-theme", "dark");
+              localStorage.setItem("theme", "dark");
+            } else {
+              tag.setAttribute("data-bs-theme", "light");
+              localStorage.setItem("theme", "light");
+            }
+          });
+      }
+    </script>
+    {% block script %}{% endblock script %}
+  </body>
+
+</html>
